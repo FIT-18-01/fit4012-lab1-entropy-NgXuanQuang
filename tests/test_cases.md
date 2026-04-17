@@ -1,5 +1,13 @@
 # Test Cases
 
+## Trạng thái kiểm thử
+
+- [x] Đã kiểm tra trường hợp chuỗi lặp hoàn toàn (AAAA)
+- [x] Đã kiểm tra trường hợp phân bố đều (ABCD)
+- [x] Đã kiểm tra trường hợp có ký tự lặp (HELLO)
+- [x] Đã kiểm tra Modulo Inverse tồn tại (3, 11)
+- [x] Đã kiểm tra Modulo Inverse không tồn tại (2, 4)
+
 ## Q1 + Q2 (Entropy & Redundancy)
 
 | #   | Input  | Entropy (Expected) | Redundancy (Expected) | Ghi chú             |

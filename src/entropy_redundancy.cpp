@@ -1,58 +1,39 @@
-#include <cmath>
 #include <iostream>
-#include <map>
 #include <string>
+#include <vector>
+#include <map>
+#include <cmath>
+#include <iomanip>
 
 using namespace std;
 
-// Tính entropy
-double calculate_entropy(const string &text) {
-    if (text.empty()) {
-        return 0.0;
-    }
-
-    map<char, int> freq;
-    for (char c : text) {
-        freq[c]++;
-    }
-
+double calculate_entropy(string data) {
+    if (data.empty()) return 0.0;
+    map<char, int> counts;
+    for (char c : data) counts[c]++;
+    
     double entropy = 0.0;
-    for (const auto &pair : freq) {
-        double p = static_cast<double>(pair.second) / text.size();
+    int len = data.length();
+    for (auto const& [curr, count] : counts) {
+        double p = (double)count / len;
         entropy -= p * log2(p);
     }
     return entropy;
 }
 
-// Tính redundancy
-double calculate_redundancy(const string &text) {
-    if (text.empty()) {
-        return 0.0;
-    }
-
-    // Đếm số ký tự khác nhau
-    map<char, int> freq;
-    for (char c : text) {
-        freq[c]++;
-    }
-
-    int m = freq.size();          // số ký tự khác nhau
-    double H = calculate_entropy(text);
-    double Hmax = log2(m);        // entropy tối đa
-
-    return Hmax - H;
+double calculate_redundancy(double entropy, int alphabet_size) {
+    if (alphabet_size <= 1) return 0.0;
+    double max_entropy = log2(alphabet_size);
+    return 1.0 - (entropy / max_entropy);
 }
 
 int main() {
-    string input;
-    cout << "Enter a string of characters: ";
-    getline(cin, input);
-
-    double entropy = calculate_entropy(input);
-    double redundancy = calculate_redundancy(input);
-
-    cout << "Entropy: " << entropy << endl;
-    cout << "Redundancy: " << redundancy << endl;
-
+    string inputs[] = {"aaaa", "abcd", "hello world"};
+    for (string s : inputs) {
+        double h = calculate_entropy(s);
+        // Giả sử bảng chữ cái là các ký tự xuất hiện trong chuỗi
+        double r = calculate_redundancy(h, 256); // Thường dùng 256 cho chuẩn ASCII
+        cout << "Input: " << s << " | Entropy: " << fixed << setprecision(4) << h << endl;
+    }
     return 0;
 }
