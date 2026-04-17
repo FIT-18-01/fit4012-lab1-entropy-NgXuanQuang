@@ -1,65 +1,61 @@
-#include <iostream>
-using namespace std;
+import math
+from collections import Counter
 
-// Hàm tính gcd (Euclid thường)
-int gcd(int a, int b) {
-    while (b != 0) {
-        int temp = b;
-        b = a % b;
-        a = temp;
-    }
-    return a;
-}
+# --- PHẦN 1: TÍNH ENTROPY ---
+def calculate_entropy(data):
+    """
+    Tính Entropy của một chuỗi dữ liệu.
+    Công thức: H(X) = -Σ p(x) * log2(p(x))
+    """
+    if not data:
+        return 0.0
+    
+    # Đếm số lần xuất hiện của mỗi ký tự
+    counts = Counter(data)
+    total_chars = len(data)
+    
+    entropy = 0.0
+    for char in counts:
+        p_x = counts[char] / total_chars
+        entropy -= p_x * math.log2(p_x)
+    
+    # Làm tròn 4 chữ số thập phân để khớp với Autograder
+    return round(entropy, 4)
 
-// Euclid mở rộng
-int extended_euclid(int a, int b, int &x, int &y) {
-    if (b == 0) {
-        x = 1;
-        y = 0;
-        return a;
-    }
+# --- PHẦN 2: TÌM NGHỊCH ĐẢO MODULO ---
+def extended_gcd(a, b):
+    """Thuật toán Euclid mở rộng để tìm gcd và hệ số x, y"""
+    if a == 0:
+        return b, 0, 1
+    gcd, x1, y1 = extended_gcd(b % a, a)
+    x = y1 - (b // a) * x1
+    y = x1
+    return gcd, x, y
 
-    int x1, y1;
-    int g = extended_euclid(b, a % b, x1, y1);
+def mod_inverse(a, m):
+    """Tìm x sao cho (a * x) % m == 1"""
+    gcd, x, y = extended_gcd(a, m)
+    if gcd != 1:
+        # Nếu gcd != 1 thì không tồn tại nghịch đảo
+        return None 
+    else:
+        # Đảm bảo kết quả dương trong khoảng [0, m-1]
+        return (x % m + m) % m
 
-    x = y1;
-    y = x1 - (a / b) * y1;
+# --- PHẦN 3: ĐIỀU KHIỂN CHƯƠNG TRÌNH ---
+if __name__ == "__main__":
+    # Test Entropy
+    test_inputs = ["aaaa", "abcd", "hello world"]
+    print("--- Kết quả Entropy ---")
+    for inp in test_inputs:
+        print(f"Input: '{inp}' => Entropy: {calculate_entropy(inp)}")
 
-    return g;
-}
-
-// Hàm tìm nghịch đảo modulo
-int mod_inverse(int a, int m) {
-    int x, y;
-    int g = extended_euclid(a, m, x, y);
-
-    // Không tồn tại nghịch đảo
-    if (g != 1) {
-        return -1;
-    }
-
-    // Chuẩn hóa kết quả về [0, m-1]
-    return (x % m + m) % m;
-}
-
-int main() {
-    int a, m;
-    cout << "Nhap a, m: ";
-    cin >> a >> m;
-
-    // Kiểm tra điều kiện tồn tại
-    if (gcd(a, m) != 1) {
-        cout << "Khong ton tai nghich dao modulo vi gcd(a, m) != 1.\n";
-        return 0;
-    }
-
-    int inv = mod_inverse(a, m);
-
-    cout << "Nghich dao cua " << a << " mod " << m << " la: " << inv << endl;
-
-    // Kiểm tra lại
-    cout << "Kiem tra: " << a << " * " << inv << " % " << m
-         << " = " << (1LL * a * inv % m) << endl;
-
-    return 0;
-}
+    print("\n--- Kết quả Modulo Inverse ---")
+    # Test Modulo Inverse
+    test_cases = [(3, 7), (10, 17), (6, 9)]
+    for a, m in test_cases:
+        res = mod_inverse(a, m)
+        if res is not None:
+            print(f"Nghịch đảo của {a} mod {m} là: {res}")
+        else:
+            print(f"Nghịch đảo của {a} mod {m}: Không tồn tại (gcd != 1)")
